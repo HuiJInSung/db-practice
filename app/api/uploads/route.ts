@@ -3,7 +3,7 @@ import { isValidObjectId } from "mongoose";
 import { handleError, jsonError } from "@/lib/api";
 import { connectDB } from "@/lib/mongoose";
 import { getSessionUserId } from "@/lib/session";
-import { readImageFile, safeFileName } from "@/lib/uploads";
+import { blobErrorResponse, readImageFile, safeFileName } from "@/lib/uploads";
 import User from "@/models/User";
 
 // GET /api/uploads：列出已上傳的圖片（直接讀 Vercel Blob，不經過資料庫）
@@ -78,7 +78,6 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (err) {
-    console.error(err);
-    return jsonError(502, "上傳到 Vercel Blob 失敗，請稍後再試");
+    return blobErrorResponse(err);
   }
 }

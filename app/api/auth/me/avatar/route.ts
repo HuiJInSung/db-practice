@@ -3,7 +3,7 @@ import { handleError, jsonError } from "@/lib/api";
 import { toPublicUser } from "@/lib/credentials";
 import { connectDB } from "@/lib/mongoose";
 import { getSessionUserId } from "@/lib/session";
-import { readImageFile, safeFileName } from "@/lib/uploads";
+import { blobErrorResponse, readImageFile, safeFileName } from "@/lib/uploads";
 import User from "@/models/User";
 
 // 刪掉 Blob 上的舊大頭照。失敗只記錄、不影響回應：資料庫已經改好了，頂多在 Blob 留下一個沒人用的檔案
@@ -36,8 +36,7 @@ export async function PUT(request: Request) {
     });
     blobUrl = blob.url;
   } catch (err) {
-    console.error(err);
-    return jsonError(502, "上傳到 Vercel Blob 失敗，請稍後再試");
+    return blobErrorResponse(err);
   }
 
   try {
