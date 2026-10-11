@@ -1,26 +1,239 @@
 @import "tailwindcss";
 
+/* 文青帳本配色：米色紙張、墨色文字、赤陶（支出）與灰綠（收入） */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #f3ede2;
+  --paper-raised: #f9f5ec;
+  /* 文字三層：主文 / 次要 / 輔助，整體加深讓閱讀更清楚 */
+  --ink: #1f1c18;
+  --ink-soft: #4d463d;
+  --ink-faint: #7a7063;
+  --rule: #d3c8b5;
+  --tape: rgba(196, 160, 110, 0.38); /* 紙膠帶 */
+  --tape-stripe: rgba(255, 250, 240, 0.35);
+  --doodle: rgba(110, 85, 50, 0.55); /* 桌面插畫的線條 */
+  --stain: rgba(120, 80, 40, 0.16); /* 咖啡杯印 */
+  --expense: #a8553c;
+  --income: #5d7356;
+  --accent: #8a6d3b;
+  --grain-opacity: 0.35;
+  --seal: #b0412e;
+  --lamp: rgba(255, 244, 222, 0.9); /* 檯燈的暖光 */
+  --vignette: rgba(120, 95, 60, 0.16); /* 紙張邊緣的陰影 */
+  --ruling: rgba(140, 120, 90, 0.08); /* 帳本橫線 */
+  /* 月報圓餅圖的分類色（依序使用，已用 dataviz validator 驗證相鄰與首尾色塊可辨識）*/
+  --viz-1: #b54a2a; /* 赤陶 */
+  --viz-2: #2f6fa8; /* 靛藍 */
+  --viz-3: #a38a14; /* 赭黃 */
+  --viz-4: #1f8a6a; /* 青綠 */
+  --viz-5: #94478d; /* 紫 */
+  --viz-other: #a69c8c; /* 其他 */
+  --viz-on: #ffffff; /* 色塊上的文字 */
+  /* 規劃圓餅圖：每個費用項目依它在清單中的位置固定一個顏色（共 14 色）。
+     圓餅依清單順序繪製，已用 dataviz validator 驗證相鄰與首尾色塊可辨識 */
+  --item-1: #b54a2a; /* 赤陶 */
+  --item-2: #2f6fa8; /* 靛藍 */
+  --item-3: #a38a14; /* 赭黃 */
+  --item-4: #94478d; /* 紫 */
+  --item-5: #1f8a6a; /* 青綠 */
+  --item-6: #c0631a; /* 橘 */
+  --item-7: #5a6fc0; /* 長春花藍 */
+  --item-8: #6f8a1f; /* 橄欖綠 */
+  --item-9: #c2507a; /* 玫瑰 */
+  --item-10: #1590b0; /* 水藍 */
+  --item-11: #a2561f; /* 茶褐 */
+  --item-12: #6d55b8; /* 堇紫 */
+  --item-13: #4f8a3a; /* 草綠 */
+  --item-14: #3d5aa8; /* 群青 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #1d1b18;
+    --paper-raised: #25221e;
+    --ink: #f3ece0;
+    --ink-soft: #cbc1b0;
+    --ink-faint: #998f80;
+    --rule: #433d36;
+    --tape: rgba(201, 167, 106, 0.22);
+    --tape-stripe: rgba(255, 255, 255, 0.08);
+    --doodle: rgba(201, 167, 106, 0.35);
+    --stain: rgba(201, 167, 106, 0.1);
+    --expense: #d8846a;
+    --income: #9cb390;
+    --accent: #c9a76a;
+    --grain-opacity: 0.12;
+    --seal: #c4573f;
+    --lamp: rgba(255, 210, 150, 0.06);
+    --vignette: rgba(0, 0, 0, 0.45);
+    --ruling: rgba(236, 228, 214, 0.05);
+    --viz-1: #b84c3c;
+    --viz-2: #5a94d6;
+    --viz-3: #a49428;
+    --viz-4: #1fa08c;
+    --viz-5: #ab76d4;
+    --viz-other: #968d7f;
+    --viz-on: #1d1b18;
+    --item-1: #c45a3c;
+    --item-2: #5a94d6;
+    --item-3: #a49428;
+    --item-4: #ab76d4;
+    --item-5: #1fa08c;
+    --item-6: #d47a35;
+    --item-7: #7585d4;
+    --item-8: #86a033;
+    --item-9: #c25584;
+    --item-10: #2a9cb8;
+    --item-11: #bf7340;
+    --item-12: #9580e0;
+    --item-13: #64a650;
+    --item-14: #5f7fd0;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-expense: var(--expense);
+  --color-income: var(--income);
+  --color-accent: var(--accent);
+  --color-seal: var(--seal);
+  --color-doodle: var(--doodle);
+  --font-serif: var(--font-garamond), var(--font-noto-serif-tc), "Songti TC", serif;
+  --font-sans: var(--font-noto-serif-tc), serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  /* 左上方的檯燈暖光 + 四周微暗，像燈下攤開的一本帳 */
+  background-image:
+    radial-gradient(ellipse 70% 55% at 18% 0%, var(--lamp), transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, var(--vignette) 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-feature-settings: "palt";
+}
+
+/* 紙張纖維質感 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.38  0 0 0 0 0.3  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* 帳本式的點狀引導線 */
+.leader {
+  flex: 1;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted var(--ink-faint);
+  transform: translateY(-0.3em);
+}
+
+/* 數字：等寬舊式數字，方便對齊 */
+.figures {
+  font-family: var(--font-garamond), serif;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* 原生日期選擇器的圖示跟著主題色 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
+@media (prefers-color-scheme: dark) {
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.85);
+  }
+}
+
+/* 帳本紙：淡淡的橫線，隨內容一起捲動；上下淡出，不搶頁首與頁尾的位置 */
+.ledger-ruling {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 35px,
+    var(--ruling) 35px,
+    var(--ruling) 36px
+  );
+  mask-image: linear-gradient(to bottom, transparent 0, #000 320px, #000 calc(100% - 200px), transparent 100%);
+}
+
+/* 會計帳簿左側的朱紅雙線 */
+.ledger-margin {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  pointer-events: none;
+  border-left: 1px solid var(--seal);
+  border-right: 1px solid var(--seal);
+  opacity: 0.28;
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* 朱紅印章「量入為出」：用雜訊遮罩做出蓋章時不均勻的印泥質感 */
+.seal {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0.2rem;
+  border: 2px solid var(--seal);
+  border-radius: 0.3rem;
+  color: var(--seal);
+  font-family: var(--font-noto-serif-tc), serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.05;
+  writing-mode: vertical-rl; /* 印文由右至左、由上而下 */
+  letter-spacing: 0.05em;
+  transform: rotate(-8deg);
+  opacity: 0.88;
+  mix-blend-mode: multiply;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.75'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.75'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+  -webkit-mask-size: 120px;
+  mask-size: 120px;
+}
+@media (prefers-color-scheme: dark) {
+  .seal {
+    mix-blend-mode: normal;
+    opacity: 0.75;
+  }
+}
+
+/* 紙膠帶：半透明斜紋，兩端是手撕的鋸齒邊 */
+.washi {
+  position: absolute;
+  z-index: 1;
+  width: 6.5rem;
+  height: 1.6rem;
+  pointer-events: none;
+  background-color: var(--tape);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    var(--tape-stripe) 6px 9px
+  );
+  box-shadow: 0 1px 2px rgba(60, 40, 20, 0.08);
+  clip-path: polygon(
+    3% 0, 97% 0, 100% 15%, 96% 30%, 100% 50%, 96% 70%, 100% 85%, 97% 100%,
+    3% 100%, 0 85%, 4% 70%, 0 50%, 4% 30%, 0 15%
+  );
 }
