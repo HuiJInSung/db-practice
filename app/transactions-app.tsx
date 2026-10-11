@@ -274,7 +274,13 @@ export default function TransactionsApp() {
                 type="button"
                 role="radio"
                 aria-checked={form.type === t}
-                onClick={() => setForm((f) => ({ ...f, type: t }))}
+                onClick={() =>
+                  setForm((f) => ({
+                    ...f,
+                    type: t,
+                    category: CATEGORIES[t].includes(f.category) ? f.category : "",
+                  }))
+                }
                 className={`border-b pb-0.5 tracking-widest transition-colors ${
                   form.type === t
                     ? t === "expense"
@@ -306,19 +312,26 @@ export default function TransactionsApp() {
           </label>
           <label className="block">
             <span className={label}>分類</span>
-            <input
-              list={`categories-${form.type}`}
+            {/* 手機瀏覽器不支援 datalist 下拉，改用原生 select */}
+            <select
               required
               value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-              className={`${lineInput} mt-1.5`}
-              placeholder="餐飲"
-            />
-            <datalist id={`categories-${form.type}`}>
+              className={`${lineInput} mt-1.5 ${form.category ? "" : "text-ink-faint"}`}
+            >
+              <option value="" disabled>
+                選擇分類
+              </option>
+              {/* 舊紀錄的分類若不在清單內，仍保留可選 */}
+              {form.category && !CATEGORIES[form.type].includes(form.category) && (
+                <option value={form.category}>{form.category}</option>
+              )}
               {CATEGORIES[form.type].map((c) => (
-                <option key={c} value={c} />
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
-            </datalist>
+            </select>
           </label>
           <label className="block">
             <span className={label}>日期</span>
